@@ -7,12 +7,20 @@ package com.gmail.joseifpb2015.Controler;
 
 import com.gmail.joseifpb2015.crudEntidades.Usuario;
 import com.gmail.joseifpb2015.crudServico.UsuarioServico;
+import com.gmail.joseifpb2015.response.Response;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,9 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/api/usuarios")
 public class UsuarioControler {
+
     @Autowired
     private UsuarioServico usuarioServico;
-    public ResponseEntity<List<Usuario>> listarTodos(){
+
+    public ResponseEntity<List<Usuario>> listarTodos() {
         return ResponseEntity.ok(usuarioServico.listarTodos());
     }
 
@@ -36,13 +46,30 @@ public class UsuarioControler {
      * @return
      */
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Usuario> listarPorId(@PathVariable(name = "id")String id){
+    public ResponseEntity<Usuario> listarPorId(@PathVariable(name = "id") String id) {
         return ResponseEntity.ok(usuarioServico.listarPorId(id));
     }
-     public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario){
-        return ResponseEntity.ok(usuarioServico.cadastrar(usuario));
+
+    @PostMapping
+    public ResponseEntity<Response<Usuario>> cadastrar(@Valid @RequestBody Usuario usuario, BindingResult result) {
+        if(result.hasErrors()){
+            List<String> erros = new ArrayList<>();
+            result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(new Response<Usuario>(erros));
+        }
+        return ResponseEntity.ok(new Response<Usuario>(usuarioServico.cadastrar(usuario)));
     }
-     public ResponseEntity<Usuario> atualizar(@PathVariable(name = "id") String id,@RequestBody Usuario usuario){
-        return ResponseEntity.ok(usuarioServico.cadastrar(usuario));
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<Usuario> atualizar(@PathVariable(name = "id") String id, @RequestBody Usuario usuario) {
+        usuario.setId(id);
+        return ResponseEntity.ok(usuarioServico.atualizar(usuario));
+
+    }
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Integer> atualizar(@PathVariable(name = "id") String id) {
+        usuarioServico.remover(id);
+        return ResponseEntity.ok(1);
+
     }
 }

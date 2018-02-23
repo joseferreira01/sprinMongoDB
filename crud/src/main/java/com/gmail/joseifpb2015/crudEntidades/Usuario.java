@@ -6,6 +6,8 @@
 package com.gmail.joseifpb2015.crudEntidades;
 
 import java.util.Objects;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,6 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Document
 public class Usuario {
+
     @Id
     private String id;
     private String nome;
@@ -31,6 +34,7 @@ public class Usuario {
         this.id = id;
     }
 
+    @NotEmpty(message = "nome não pode ser vazio")
     public String getNome() {
         return nome;
     }
@@ -39,6 +43,8 @@ public class Usuario {
         this.nome = nome;
     }
 
+    @NotEmpty(message = "CPF não pode ser vazio")
+    @CPF(message = "CPF inválido")
     public String getCPF() {
         return CPF;
     }
@@ -75,6 +81,5 @@ public class Usuario {
         }
         return true;
     }
-    
-    
+
 }
