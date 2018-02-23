@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
 import javax.validation.Valid;
+import javax.xml.ws.BindingType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -36,8 +37,8 @@ public class UsuarioControler {
     @Autowired
     private UsuarioServico usuarioServico;
 
-    public ResponseEntity<List<Usuario>> listarTodos() {
-        return ResponseEntity.ok(usuarioServico.listarTodos());
+    public ResponseEntity<Response<List<Usuario>>> listarTodos() {
+        return ResponseEntity.ok(new Response(usuarioServico.listarTodos()));
     }
 
     /**
@@ -46,13 +47,13 @@ public class UsuarioControler {
      * @return
      */
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Usuario> listarPorId(@PathVariable(name = "id") String id) {
-        return ResponseEntity.ok(usuarioServico.listarPorId(id));
+    public ResponseEntity<Response<Usuario>> listarPorId(@PathVariable(name = "id") String id) {
+        return ResponseEntity.ok(new Response(usuarioServico.listarPorId(id)));
     }
 
     @PostMapping
     public ResponseEntity<Response<Usuario>> cadastrar(@Valid @RequestBody Usuario usuario, BindingResult result) {
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             List<String> erros = new ArrayList<>();
             result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
             return ResponseEntity.badRequest().body(new Response<Usuario>(erros));
@@ -61,11 +62,17 @@ public class UsuarioControler {
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable(name = "id") String id, @RequestBody Usuario usuario) {
+    public ResponseEntity<Response<Usuario>> atualizar(@PathVariable(name = "id") String id, @Valid @RequestBody Usuario usuario, BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> erros = new ArrayList<>();
+            result.getAllErrors().forEach(erro -> erros.add(erro.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(new Response<Usuario>(erros));
+        }
         usuario.setId(id);
-        return ResponseEntity.ok(usuarioServico.atualizar(usuario));
+        return ResponseEntity.ok(new Response<Usuario>(usuarioServico.atualizar(usuario)));
 
     }
+
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Integer> atualizar(@PathVariable(name = "id") String id) {
         usuarioServico.remover(id);
