@@ -10,13 +10,10 @@ import com.gmail.joseifpb2015.crudServico.UsuarioServico;
 import com.gmail.joseifpb2015.response.Response;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.Attributes;
 import javax.validation.Valid;
-import javax.xml.ws.BindingType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(path = "/api/usuarios")
+//@RequestMapping(path = "/api/usuarios")
 public class UsuarioControler {
 
     @Autowired
